@@ -82,16 +82,8 @@ This repository is **100% pre-configured for automated Render.com deployment** v
    - **Start Command:** `npm start`
    - **Node.js Version:** `20.18.0`
 
-4. **Environment Variables Configuration:**
-   In Render Dashboard (**Environment** section), add the following:
 
-   | Variable Name | Value | Description |
-   |---|---|---|
-   | `DATABASE_URL` | `postgresql://mr_coder_04:Ye2aw8Dp2QNFtbkUC3GyYw@sofo-projectmang-31597.j77.aws-ap-south-1.cockroachlabs.cloud:26257/sofo_proje_manag?sslmode=verify-full&schema=public` | CockroachDB Cloud PostgreSQL Connection |
-   | `ERP_BACKEND_URL` | `https://erp-backend-1-02lc.onrender.com` | Live Pjsofonic ERP Backend API |
-   | `JWT_SECRET` | `sofo_projectos_production_secret_key_2026` | Production Auth Token Secret |
-
-5. **Deploy Service:**
+4. **Deploy Service:**
    Click **"Create Web Service"**. Render will build the Next.js 15 app, generate the Prisma client, and deploy your live application at **`https://sofo-projectos.onrender.com`**!
 
 ---
