@@ -6,27 +6,27 @@
 
 ---
 
-## 🌐 Live Netlify Deployment Guide
+## 🌐 Live Render.com Deployment Guide
 
-This repository is **100% pre-configured for automated Netlify deployment** via `netlify.toml` and `@netlify/plugin-nextjs`.
+This repository is **100% pre-configured for automated Render.com deployment** via `render.yaml` Blueprint.
 
-### Step-by-Step Netlify Deployment:
+### Step-by-Step Render.com Deployment:
 
-1. **Log in to Netlify:**
-   Go to [app.netlify.com](https://app.netlify.com) and log in.
+1. **Log in to Render.com:**
+   Go to [dashboard.render.com](https://dashboard.render.com) and log in.
 
-2. **Import Existing Project:**
-   - Click **"Add new site"** → **"Import an existing project"**.
-   - Select **GitHub** and authorize access.
-   - Select repository: **`mrCoderPj04/Sofo_projectOS`**.
+2. **Create New Web Service:**
+   - Click **"New +"** → **"Web Service"** (or **"Blueprint"**).
+   - Connect your GitHub repository: **`mrCoderPj04/Sofo_projectOS`**.
 
-3. **Build Settings (Auto-Detected):**
-   - **Build Command:** `npm run build`
-   - **Publish Directory:** `.next`
-   - **Node.js Version:** `20`
+3. **Build & Start Settings (Auto-Detected):**
+   - **Environment:** `Node`
+   - **Build Command:** `npm install && npx prisma generate && npm run build`
+   - **Start Command:** `npm start`
+   - **Node.js Version:** `20.18.0`
 
 4. **Environment Variables Configuration:**
-   In Netlify Site Settings (**Site Configuration** → **Environment Variables**), add the following:
+   In Render Dashboard (**Environment** section), add the following:
 
    | Variable Name | Value | Description |
    |---|---|---|
@@ -34,8 +34,8 @@ This repository is **100% pre-configured for automated Netlify deployment** via 
    | `ERP_BACKEND_URL` | `https://erp-backend-1-02lc.onrender.com` | Live Pjsofonic ERP Backend API |
    | `JWT_SECRET` | `sofo_projectos_production_secret_key_2026` | Production Auth Token Secret |
 
-5. **Deploy Site:**
-   Click **"Deploy Site"**. Netlify will automatically build, generate Prisma Client, and deploy your live Next.js 15 application!
+5. **Deploy Service:**
+   Click **"Create Web Service"**. Render will build the Next.js 15 app, generate the Prisma client, and deploy your live application!
 
 ---
 

@@ -1,0 +1,19 @@
+# Render.com Blueprint Configuration for SOFO ProjectOS (Next.js 15 App Router)
+
+services:
+  - type: web
+    name: sofo-projectos
+    env: node
+    plan: free
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: DATABASE_URL
+        sync: false
+      - key: ERP_BACKEND_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
