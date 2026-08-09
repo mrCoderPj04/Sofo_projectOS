@@ -1,7 +1,0 @@
-{
-  "name": "@sofo-sync/shared",
-  "version": "1.0.0",
-  "private": true,
-  "description": "SOFO Sync Shared Types, Constants & Utilities",
-  "main": "index.js"
-}

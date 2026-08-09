@@ -1,97 +1,140 @@
-<div align="center">
+# SOFO ProjectOS — Enterprise Project Operating System 🚀
 
-  <img src="apps/web/public/SOFO_syc.png" alt="SOFO Sync Logo" width="160" style="border-radius: 20px; box-shadow: 0 10px 30px rgba(99,102,241,0.3);" />
+> *"Don't just manage work. Solve problems."*
 
-  # SOFO Sync ⚡
-  ### **One QR. Instant Connection. Real-Time Cross-Device Collaboration.**
-
-  [![Netlify Status](https://img.shields.io/badge/Frontend-Netlify%20Live-00C7B7?style=for-the-badge&logo=netlify)](https://sofo-syc.netlify.app)
-  [![Render Status](https://img.shields.io/badge/Backend-Render%20API-46E3B7?style=for-the-badge&logo=render)](https://sofo-syc.onrender.com/api)
-  [![Next.js 15](https://img.shields.io/badge/Next.js-15.1.7-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
-  [![React 19](https://img.shields.io/badge/React-19.0.0-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
-  [![Google Gemini](https://img.shields.io/badge/AI-Gemini%202.0%20Flash-4285F4?style=for-the-badge&logo=google)](https://deepmind.google/technologies/gemini/)
-  [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-
-</div>
+**SOFO ProjectOS** is an enterprise-grade Project Operating System built for engineering teams, project managers, and administrators. It integrates live **Pjsofonic ERP Single Sign-On (SSO)**, **CockroachDB Cloud PostgreSQL**, **5-Whys Root Cause Analysis (RCA)**, **Mandatory Deliverable Uploads**, **Systemic Problem Resolution Audit Reports (PDF & Markdown)**, and a **Neon Glassmorphic Motion UI**.
 
 ---
 
-## 🌐 Live Deployments & Repository
+## 🌟 Highlights & Key Features
 
-| Service | Environment | Live URL | Status |
-|---|---|---|---|
-| **Frontend Web App** | Netlify | [https://sofo-syc.netlify.app](https://sofo-syc.netlify.app) | 🟢 Live |
-| **GitHub Repository** | GitHub | [https://github.com/mrCoderPj04/Sofo_SyC.git](https://github.com/mrCoderPj04/Sofo_SyC.git) | 🟢 Active |
+- **🔐 Pjsofonic ERP SSO Authentication:**
+  - Integrated with live Pjsofonic ERP backend (`https://erp-backend-1-02lc.onrender.com`).
+  - Strict employee verification (`isErpVerified: true`). Public registration is disabled and managed exclusively via Pjsofonic ERP Central Administration.
 
----
+- **🗄️ CockroachDB Cloud PostgreSQL Database:**
+  - Production-ready schema powered by Prisma ORM connected to CockroachDB Cloud PostgreSQL (`sofo_proje_manag`).
 
-## 🌟 Overview
+- **📁 Mandatory Project Deliverable Docs Module:**
+  - Step 6 in Project Creation Wizard requires 4 mandatory deliverable documents before finalizing project creation:
+    1. **Implementation Plan File / Link**
+    2. **Walkthrough Document / Link**
+    3. **Project Logo Image / Link**
+    4. **Presentation / Pitch Deck (PPT) File / Link**
+  - Dedicated Deliverables Repository on Project Workspace page (`/projects/[id]`).
 
-**SOFO Sync** empowers cross-device collaboration in seconds without sign-up friction. Scan **One QR Code** using any mobile phone camera or enter a **6-Digit PIN** / **Shareable Link** to instantly pair mobile, tablet, desktop, and web browsers into an encrypted real-time workspace.
+- **🛠️ Systemic Problem Resolution OS & Scope Selection:**
+  - Problem Creation modal with Environment Scope selection:
+    - 🖥️ **Terminal**
+    - 🖥️ **Server**
+    - ⚙️ **Backend**
+    - 🎨 **Frontend**
+    - 💻 **Localhost**
+  - 5-Whys Root Cause Traversal workspace (`/problems/[id]`).
+  - Interactive **"Solution Execution Steps & Resolution Summary" ("Kya Kya Kra")** action log.
+  - Automated **Systemic Problem Resolution Audit Report Generator** supporting instant PDF printing (`window.print()`) and Markdown (`.md`) download.
 
----
-
-## ✨ Features
-
-- 📱 **1-Tap Camera QR & PIN Pairing**: Point any iPhone or Android camera at the QR code to auto-pair instantly via direct URL link (`https://sofo-syc.netlify.app/?room=SOFO-XXXXXX&pin=XXXXXX`).
-- 🎨 **Real-Time Cross-Device Whiteboard**: Touch-optimized for mobile devices (`onTouchStart`, `onTouchMove`, `onTouchEnd`) and mouse-optimized for desktop. Canvas strokes sync live across all connected devices.
-- 📩 **Collaborative Document Cards**: Write notes and post document cards in real-time. Cards sync immediately across all connected browsers.
-- 📥 **Shared File Vault**: Upload files and images with multi-device downloadable file cards.
-- 🤖 **Google Gemini 2.0 Flash AI Copilot**: Ask questions about document notes, whiteboard canvas, or project tasks directly within your active session.
-- 🛡️ **AES-256 Security & Subnet Verification**: Includes PIN rate-limiting (max 5 attempts), 10-minute PIN expiry, signed security tokens, and IP subnet verification.
-- 🔄 **Synchronized Disconnect**: Disconnecting from any device instantly resets all connected peer devices back to the clean home screen.
-
----
-
-## 📂 Repository Structure
-
-```
-SOFO-Sync/
-│
-├── apps/
-│   ├── web/               # Next.js 15 Web Workspace & Collaboration Dashboard
-│   ├── mobile/            # React Native Mobile Companion
-│   └── desktop/           # Electron / Tauri Native Desktop App
-│
-├── backend/
-│   ├── api/               # Express / HTTP REST API Gateway Service (Render)
-│   ├── ai/                # Google Gemini 2.0 Flash AI Integration Engine
-│   └── websocket/         # Peer Signaling Relay
-│
-├── render.yaml            # Render 1-Click Deployment Blueprint
-├── netlify.toml           # Netlify Monorepo Deployment Config
-├── shared/                # Shared Types, Constants & QR Handshake Helpers
-└── README.md              # Documentation
-```
+- **🎨 Neon Glassmorphism UI & Responsive Viewport System:**
+  - Futuristic **Neon Parrot Green (`#39FF14`)** hover glow effects and developer workspace background image (`/code_bg.jpg`).
+  - **Glassmorphism Motion Backdrop Blur (`backdrop-blur-xl bg-zinc-950/75 border border-zinc-800/80 shadow-2xl`)** on all cards, panels, and sidebars.
+  - Collapsible **Right-Side Slide-Over Navigation Drawer ([RightSidebar.jsx](file:///home/mr_coder_04/Documents/PROJECT/components/layout/RightSidebar.jsx))**.
+  - Perfect Round Circle Logo (`/public/sofo_Pm.png`).
+  - Fluid viewport auto-fit configuration (`export const viewport` in `app/layout.js`) self-adjusting to all device screen sizes.
 
 ---
 
-## 🚀 Local Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
-- **Node.js**: `v18.x` or `v20.x`
-- **npm**: `v9.x` or later
 
-### Installation
+- Node.js 18.x or 20.x
+- npm / yarn / pnpm
 
-```bash
-# Clone the repository
-git clone https://github.com/mrCoderPj04/Sofo_SyC.git SOFO-Sync
-cd SOFO-Sync
+### Environment Configuration (`.env`)
 
-# Install workspace dependencies
-npm install
+Create a `.env` file in the project root:
 
-# Start Backend API Gateway (Port 5000)
-PORT=5000 node backend/api/index.js
+```env
+# Database Connection (CockroachDB Cloud PostgreSQL)
+DATABASE_URL="postgresql://mr_coder_04:Ye2aw8Dp2QNFtbkUC3GyYw@sofo-projectos-31597.j77.aws-ap-south-1.cockroachlabs.cloud:26257/sofo_proje_manag?sslmode=verify-full&schema=public"
 
-# In another terminal, start Web Application (Port 3000)
-cd apps/web
-npx next dev -H 0.0.0.0
+# Pjsofonic ERP Live API Backend
+ERP_BACKEND_URL="https://erp-backend-1-02lc.onrender.com"
+
+# Session Secret
+JWT_SECRET="sofo_projectos_production_secret_key_2026"
 ```
 
-Open **http://localhost:3000** in your browser.
+### Installation & Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Generate Prisma Client
+npx prisma generate
+
+# Run local development server
+npm run dev
+```
+
+App will be available at **http://localhost:3000**.
+
+### Production Build
+
+```bash
+# Build production bundle
+npm run build
+
+# Start production server
+npm start
+```
 
 ---
 
-Developed with ❤️ by **MrCoder**.
+## 📂 Project Structure
+
+```
+├── app/
+│   ├── (auth)/
+│   │   ├── login/               # Pjsofonic ERP SSO Login Portal
+│   │   └── register/            # Redirects to Login (Registration disabled)
+│   ├── (dashboard)/
+│   │   ├── dashboard/           # Master Dashboard & Analytics Overview
+│   │   ├── projects/            # Project Management & Deliverables Repository
+│   │   │   ├── new/             # 8-Step Wizard with Mandatory Deliverables Module
+│   │   │   └── [id]/            # Project Workspace with Deliverables Tab
+│   │   ├── problems/            # Problem Resolution OS
+│   │   │   └── [id]/            # 5-Whys Workspace, Action Log & Report Generator
+│   │   └── layout.js            # Responsive Layout Wrapper
+│   ├── api/                     # Next.js App Router API Routes
+│   │   ├── auth/                # Live ERP Authentication API
+│   │   ├── projects/            # Project & Deliverables API
+│   │   ├── problems/            # Problem & 5-Whys RCA API
+│   │   └── solutions/           # Solution Evaluation API
+│   ├── globals.css              # Glassmorphism & Neon Parrot Green Styling
+│   ├── layout.js                # Fluid Viewport Root Layout
+│   └── not-found.js             # 404 Handler
+├── components/
+│   ├── layout/
+│   │   ├── Header.jsx           # Ultra-Sleek Glassmorphic Enterprise Header
+│   │   ├── Sidebar.jsx          # Left Persistent Workspace Navigation
+│   │   ├── RightSidebar.jsx     # Right-Side Collapsible Slide-Over Drawer
+│   │   └── CommandPalette.jsx   # ⌘K Command Search Palette
+│   ├── projects/
+│   │   └── ProjectArtifactsSection.jsx # 4 Deliverables Upload Component
+│   └── ui/                      # Reusable UI Components (Card, Badge, Button)
+├── prisma/
+│   └── schema.prisma            # CockroachDB PostgreSQL Prisma Schema
+└── public/
+    ├── sofo_Pm.png              # Round Circle Logo Image
+    └── code_bg.jpg              # Software Engineering Background Image
+```
+
+---
+
+## 📜 License
+
+Distributed under the MIT License. See [LICENSE](file:///home/mr_coder_04/Documents/PROJECT/LICENSE) for details.
+
+© 2026 **Pjsofonic / mrCoderPj04**. All Rights Reserved.

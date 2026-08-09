@@ -1,0 +1,4 @@
+ALTER TABLE IF EXISTS "Problem" SET (schema_locked = false);
+ALTER TABLE "Problem" ADD COLUMN IF NOT EXISTS "environmentScope" STRING NOT NULL DEFAULT 'Backend';
+ALTER TABLE "Problem" ADD COLUMN IF NOT EXISTS "resolutionSteps" STRING NOT NULL DEFAULT '[]';
+ALTER TABLE "Problem" ADD COLUMN IF NOT EXISTS "resolvedAt" TIMESTAMP(3);

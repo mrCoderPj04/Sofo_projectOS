@@ -1,40 +1,43 @@
 {
-  "name": "sofo-sync",
+  "name": "sofo-projectos",
   "version": "1.0.0",
   "private": true,
-  "description": "SOFO Sync - One QR. Instant Connection. Real-Time Collaboration.",
-  "workspaces": [
-    "apps/web",
-    "apps/desktop",
-    "apps/mobile",
-    "backend/*",
-    "shared"
-  ],
   "scripts": {
-    "dev": "npm run dev --workspace=@sofo-sync/web",
-    "dev:web": "npm run dev --workspace=@sofo-sync/web",
-    "dev:backend": "npm run dev --workspace=@sofo-sync/api",
-    "build": "npm run build --workspace=@sofo-sync/web",
-    "start": "npm run start --workspace=@sofo-sync/web",
-    "lint": "npm run lint --workspace=@sofo-sync/web"
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "seed": "node prisma/seed.js"
   },
-  "keywords": [
-    "sofo-sync",
-    "qr-code",
-    "realtime-collaboration",
-    "whiteboard",
-    "documents",
-    "webrtc",
-    "monorepo"
-  ],
-  "author": "SOFO Sync Team",
-  "license": "MIT",
   "dependencies": {
-    "caniuse-lite": "^1.0.30001806",
-    "compression": "^1.8.1",
-    "debug": "^4.4.3",
-    "http-errors": "^2.0.1",
-    "statuses": "^2.0.2",
-    "stream-buffers": "^3.0.3"
+    "@prisma/client": "^6.3.1",
+    "@radix-ui/react-avatar": "^1.1.2",
+    "@radix-ui/react-dialog": "^1.1.5",
+    "@radix-ui/react-dropdown-menu": "^2.1.5",
+    "@radix-ui/react-popover": "^1.1.5",
+    "@radix-ui/react-select": "^2.1.5",
+    "@radix-ui/react-tabs": "^1.1.2",
+    "@radix-ui/react-tooltip": "^1.1.7",
+    "@xyflow/react": "^12.4.2",
+    "bcryptjs": "^2.4.3",
+    "canvas-confetti": "^1.9.4",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.4.1",
+    "jose": "^5.9.6",
+    "lucide-react": "^0.474.0",
+    "next": "^15.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^2.15.0",
+    "tailwind-merge": "^3.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.5",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.1",
+    "prisma": "^6.3.1",
+    "tailwindcss": "^4.0.5"
   }
 }
