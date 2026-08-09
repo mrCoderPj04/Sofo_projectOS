@@ -1,9 +1,21 @@
-# SOFO ProjectOS — Enterprise Project Operating System 🚀
+<p align="center">
+  <img src="public/sofo_Pm.png" alt="SOFO ProjectOS Round Logo" width="120" height="120" style="border-radius: 50%;" />
+</p>
 
-> *"Don't just manage work. Solve problems."*
+<h1 align="center">SOFO ProjectOS — Enterprise Project Operating System 🚀</h1>
 
-[![Live Application](https://img.shields.io/badge/Live_App-sofo--projectos.onrender.com-39FF14?style=for-the-badge&logo=render&logoColor=black)](https://sofo-projectos.onrender.com)
-[![Login Portal](https://img.shields.io/badge/Login_Portal-Online-blue?style=for-the-badge&logo=auth0&logoColor=white)](https://sofo-projectos.onrender.com/login)
+<p align="center">
+  <i>"Don't just manage work. Solve problems."</i>
+</p>
+
+<p align="center">
+  <a href="https://sofo-projectos.onrender.com">
+    <img src="https://img.shields.io/badge/Live_App-sofo--projectos.onrender.com-39FF14?style=for-the-badge&logo=render&logoColor=black" alt="Live Application" />
+  </a>
+  <a href="https://sofo-projectos.onrender.com/login">
+    <img src="https://img.shields.io/badge/Login_Portal-Online-blue?style=for-the-badge&logo=auth0&logoColor=white" alt="Login Portal" />
+  </a>
+</p>
 
 ---
 
