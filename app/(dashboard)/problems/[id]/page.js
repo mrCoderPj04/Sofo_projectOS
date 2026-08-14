@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Printer,
   Download,
+  FileSpreadsheet,
   Terminal,
   Server,
   Code2,
@@ -30,6 +31,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { downloadProblemsAsExcel } from '@/lib/excel-export';
 
 export default function ProblemDetailWorkspace({ params }) {
   const { id } = use(params);
@@ -201,61 +203,18 @@ export default function ProblemDetailWorkspace({ params }) {
     setAiAnalyzing(false);
   };
 
-  // Generate & Download Markdown Report
-  const handleDownloadMarkdownReport = () => {
+  // Generate & Download Excel Report (.xlsx / .csv)
+  const handleDownloadExcelReport = () => {
     if (!problem) return;
-
-    const selectedSol = problem.solutions?.find(s => s.status === 'SELECTED');
-
-    const reportContent = `# Pjsofonic ERP — Systemic Problem Resolution Report
-
-**Problem ID:** ${problem.probId}
-**Title:** ${problem.title}
-**Environment Scope:** ${problem.environmentScope || 'Backend'}
-**Severity:** ${problem.severity}
-**Status:** ${problem.status}
-**Project:** ${problem.project?.name || 'N/A'}
-**Generated On:** ${new Date().toLocaleString()}
-
----
-
-## 1. Problem Overview & Symptoms
-${problem.symptoms || problem.description || 'No symptoms provided.'}
-
----
-
-## 2. 5-Whys Root Cause Traversal
-${fiveWhys.map(w => `**Why ${w.whyNumber}:** ${w.question}\n*Answer:* ${w.answer || 'N/A'}`).join('\n\n')}
-
-**Confirmed Root Cause:**
-> ${confirmedRootCause || 'Under investigation.'}
-
----
-
-## 3. Selected Solution
-${selectedSol ? `**Solution:** ${selectedSol.title}\n**Approach:** ${selectedSol.approach}` : 'No solution explicitly selected yet.'}
-
----
-
-## 4. Resolution Actions Taken ("Kya Kya Kra")
-${resolutionSteps.length > 0
-  ? resolutionSteps.map((step, i) => `${i + 1}. ${step}`).join('\n')
-  : 'No step-by-step resolution actions logged.'}
-
----
-
-## 5. Audit & Resolution Verification
-- **Status:** ${problem.status}
-- **Resolution Date:** ${problem.resolvedAt ? new Date(problem.resolvedAt).toLocaleString() : 'In Progress'}
-- **System Verification:** Verified by Pjsofonic ERP Systemic Engine.
-`;
-
-    const blob = new Blob([reportContent], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${problem.probId}-Resolution-Report.md`;
-    a.click();
+    const problemData = {
+      ...problem,
+      rca: {
+        fiveWhysData: JSON.stringify(fiveWhys),
+        confirmedRootCause
+      },
+      resolutionSteps: JSON.stringify(resolutionSteps)
+    };
+    downloadProblemsAsExcel([problemData], `${problem.probId}-Systemic-Resolution-Report.csv`);
   };
 
   if (loading) {
@@ -662,9 +621,9 @@ ${resolutionSteps.length > 0
                   <Printer className="w-4 h-4" />
                   <span>Print Report</span>
                 </Button>
-                <Button onClick={handleDownloadMarkdownReport} className="bg-indigo-600 hover:bg-indigo-500 text-white flex items-center space-x-1">
-                  <Download className="w-4 h-4" />
-                  <span>Download Markdown (.md)</span>
+                <Button onClick={handleDownloadExcelReport} className="bg-emerald-600 hover:bg-emerald-500 text-white flex items-center space-x-1.5 cursor-pointer">
+                  <FileSpreadsheet className="w-4 h-4 text-white" />
+                  <span>Download Excel Report (.xlsx)</span>
                 </Button>
               </div>
             </div>

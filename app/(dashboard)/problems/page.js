@@ -14,12 +14,14 @@ import {
   Laptop,
   X,
   Sparkles,
-  FileCheck
+  FileCheck,
+  FileSpreadsheet
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { downloadProblemsAsExcel } from '@/lib/excel-export';
 
 export default function ProblemsPage() {
   const [problems, setProblems] = useState([]);
@@ -116,6 +118,14 @@ export default function ProblemsPage() {
     }
   };
 
+  const handleDownloadAllReports = () => {
+    if (problems.length === 0) {
+      alert('No problems logged in system to export.');
+      return;
+    }
+    downloadProblemsAsExcel(problems, 'Pjsofonic-All-Systemic-Problem-Reports.csv');
+  };
+
   return (
     <div className="space-y-6 pb-12">
       {/* Top Banner Header */}
@@ -125,12 +135,23 @@ export default function ProblemsPage() {
             <AlertTriangle className="w-6 h-6 text-rose-400" />
             <span>Problem Resolution OS</span>
           </h1>
-          <p className="text-xs text-zinc-400 mt-1">Systemic Problem Logging, 5-Whys Root Cause Analysis, Solution Action Logs & PDF Reports.</p>
+          <p className="text-xs text-zinc-400 mt-1">Systemic Problem Logging, 5-Whys Root Cause Analysis, Solution Action Logs & Excel Spreadsheet Export.</p>
         </div>
-        <Button onClick={() => setShowModal(true)} className="flex items-center space-x-2 bg-rose-600 hover:bg-rose-500 text-white cursor-pointer">
-          <Plus className="w-4 h-4" />
-          <span>Log New Problem</span>
-        </Button>
+        <div className="flex items-center space-x-3">
+          <Button
+            onClick={handleDownloadAllReports}
+            disabled={problems.length === 0}
+            variant="outline"
+            className="flex items-center space-x-1.5 border-emerald-500/40 text-emerald-300 hover:text-white cursor-pointer"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+            <span>Download All Reports (Excel)</span>
+          </Button>
+          <Button onClick={() => setShowModal(true)} className="flex items-center space-x-2 bg-rose-600 hover:bg-rose-500 text-white cursor-pointer">
+            <Plus className="w-4 h-4" />
+            <span>Log New Problem</span>
+          </Button>
+        </div>
       </div>
 
       {/* Problem Cards List or Empty State */}

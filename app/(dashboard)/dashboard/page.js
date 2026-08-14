@@ -13,31 +13,61 @@ import {
   Clock,
   ChevronRight,
   Layers,
-  Building2
+  Building2,
+  RefreshCw,
+  Crown
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { InProcessWorkingStatusSection } from '@/components/projects/InProcessWorkingStatusSection';
 
 export default function DashboardPage() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState('');
+
+  const loadProjects = async () => {
+    try {
+      const res = await fetch('/api/projects');
+      const data = await res.json();
+      setProjects(data.projects || []);
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
+  };
+
+  const handleSyncErp = async () => {
+    setSyncing(true);
+    setSyncMsg('Fetching & Syncing projects from Pjsofonic ERP Backend...');
+    try {
+      const res = await fetch('/api/projects/sync', { method: 'POST' });
+      const data = await res.json();
+      setSyncMsg(data.message || 'ERP Synchronization complete.');
+      await loadProjects();
+    } catch (err) {
+      setSyncMsg('ERP Sync failed or backend unreached.');
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setSyncMsg(''), 4000);
+    }
+  };
 
   useEffect(() => {
-    fetch('/api/projects')
-      .then((res) => res.json())
-      .then((data) => {
-        setProjects(data.projects || []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
+    loadProjects();
+    // Auto-trigger sync on mount to ensure ERP projects are always fetched
+    fetch('/api/projects/sync', { method: 'POST' })
+      .then(() => loadProjects())
+      .catch(() => {});
   }, []);
 
   const totalProjects = projects.length;
   const activeProjects = projects.filter((p) => p.status === 'ACTIVE').length;
+  const inProcessProjects = projects.filter((p) => p.status === 'IN_PROCESS').length;
+  const doneProjects = projects.filter((p) => p.status === 'DONE' || p.status === 'COMPLETED').length;
 
   let totalTasks = 0;
   let completedTasks = 0;
@@ -63,19 +93,28 @@ export default function DashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-5">
         <div>
           <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-black tracking-tight text-white">Pjsofonic ERP — Project OS</h1>
-            <Badge variant="primary" className="flex items-center space-x-1">
-              <Building2 className="w-3.5 h-3.5" />
-              <span>Production Active</span>
+            <h1 className="text-2xl font-black tracking-tight text-white">SOFO ProjectOS — Team Leader Portal</h1>
+            <Badge variant="primary" className="flex items-center space-x-1 bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
+              <Crown className="w-3.5 h-3.5" />
+              <span>Team Leader Authorized</span>
             </Badge>
           </div>
           <p className="text-xs text-zinc-400 mt-1">
-            Don't just manage work. <span className="text-indigo-400 font-semibold">Solve problems.</span> Pjsofonic ERP Systemic Problem Resolution.
+            Don't just manage work. <span className="text-indigo-400 font-semibold">Solve problems.</span> EMS & ERP Systemic Problem Resolution.
           </p>
         </div>
         <div className="flex items-center space-x-3">
+          <Button
+            onClick={handleSyncErp}
+            disabled={syncing}
+            variant="outline"
+            className="flex items-center space-x-2 text-xs border-emerald-500/40 hover:border-[#39FF14] text-emerald-300 hover:text-white"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
+            <span>{syncing ? 'Syncing ERP...' : 'Sync ERP Projects'}</span>
+          </Button>
           <Link href="/projects/new">
-            <Button variant="default" className="flex items-center space-x-2">
+            <Button variant="default" className="flex items-center space-x-2 text-xs">
               <Plus className="w-4 h-4" />
               <span>Create New Project</span>
             </Button>
@@ -83,70 +122,86 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {syncMsg && (
+        <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium animate-in fade-in duration-200 text-center">
+          {syncMsg}
+        </div>
+      )}
+
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <Card className="bg-zinc-900/60 border-zinc-800/80 p-4">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-medium">Total Projects</span>
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+        <Card className="bg-zinc-900/60 border-zinc-800/80 p-3.5">
+          <div className="flex items-center justify-between text-zinc-400 mb-1.5">
+            <span className="text-xs font-medium">Total</span>
             <FolderKanban className="w-4 h-4 text-indigo-400" />
           </div>
-          <div className="text-2xl font-bold text-white">{totalProjects}</div>
-          <div className="text-[10px] text-zinc-500 mt-1">{activeProjects} active</div>
+          <div className="text-xl font-bold text-white">{totalProjects}</div>
+          <div className="text-[10px] text-zinc-500 mt-0.5">Projects</div>
         </Card>
 
-        <Card className="bg-zinc-900/60 border-zinc-800/80 p-4">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
+        <Card className="bg-zinc-900/60 border-indigo-500/30 p-3.5">
+          <div className="flex items-center justify-between text-zinc-400 mb-1.5">
+            <span className="text-xs font-medium text-indigo-300">Active</span>
+            <Activity className="w-4 h-4 text-indigo-400" />
+          </div>
+          <div className="text-xl font-bold text-indigo-400">{activeProjects}</div>
+          <div className="text-[10px] text-zinc-500 mt-0.5">Active projects</div>
+        </Card>
+
+        <Card className="bg-zinc-900/60 border-amber-500/30 p-3.5">
+          <div className="flex items-center justify-between text-zinc-400 mb-1.5">
+            <span className="text-xs font-medium text-amber-300">In Process</span>
+            <Clock className="w-4 h-4 text-amber-400" />
+          </div>
+          <div className="text-xl font-bold text-amber-400">{inProcessProjects}</div>
+          <div className="text-[10px] text-zinc-500 mt-0.5">In Progress</div>
+        </Card>
+
+        <Card className="bg-zinc-900/60 border-emerald-500/30 p-3.5">
+          <div className="flex items-center justify-between text-zinc-400 mb-1.5">
+            <span className="text-xs font-medium text-emerald-300">Done</span>
+            <CheckSquare className="w-4 h-4 text-emerald-400" />
+          </div>
+          <div className="text-xl font-bold text-emerald-400">{doneProjects}</div>
+          <div className="text-[10px] text-zinc-500 mt-0.5">Completed</div>
+        </Card>
+
+        <Card className="bg-zinc-900/60 border-zinc-800/80 p-3.5">
+          <div className="flex items-center justify-between text-zinc-400 mb-1.5">
             <span className="text-xs font-medium">Open Problems</span>
             <AlertTriangle className="w-4 h-4 text-amber-400" />
           </div>
-          <div className="text-2xl font-bold text-amber-400">{openProblems}</div>
-          <div className="text-[10px] text-zinc-500 mt-1">Requiring 5-Whys analysis</div>
+          <div className="text-xl font-bold text-amber-400">{openProblems}</div>
+          <div className="text-[10px] text-zinc-500 mt-0.5">5-Whys active</div>
         </Card>
 
-        <Card className="bg-zinc-900/60 border-zinc-800/80 p-4">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-medium">Critical Problems</span>
-            <AlertTriangle className="w-4 h-4 text-rose-500" />
-          </div>
-          <div className="text-2xl font-bold text-rose-500">{criticalProblems}</div>
-          <div className="text-[10px] text-zinc-500 mt-1">High impact severity</div>
-        </Card>
-
-        <Card className="bg-zinc-900/60 border-zinc-800/80 p-4">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-medium">Task Completion</span>
+        <Card className="bg-zinc-900/60 border-zinc-800/80 p-3.5">
+          <div className="flex items-center justify-between text-zinc-400 mb-1.5">
+            <span className="text-xs font-medium">Tasks Done</span>
             <CheckSquare className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-2xl font-bold text-emerald-400">
+          <div className="text-xl font-bold text-emerald-400">
             {totalTasks > 0 ? `${Math.round((completedTasks / totalTasks) * 100)}%` : '0%'}
           </div>
-          <div className="text-[10px] text-zinc-500 mt-1">{completedTasks} of {totalTasks} tasks done</div>
+          <div className="text-[10px] text-zinc-500 mt-0.5">{completedTasks}/{totalTasks}</div>
         </Card>
 
-        <Card className="bg-zinc-900/60 border-zinc-800/80 p-4">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-medium">Overdue Tasks</span>
-            <Clock className="w-4 h-4 text-rose-400" />
-          </div>
-          <div className="text-2xl font-bold text-rose-400">{overdueTasks}</div>
-          <div className="text-[10px] text-zinc-500 mt-1">Past deadline</div>
-        </Card>
-
-        <Card className="bg-zinc-900/60 border-zinc-800/80 p-4">
-          <div className="flex items-center justify-between text-zinc-400 mb-2">
+        <Card className="bg-zinc-900/60 border-zinc-800/80 p-3.5">
+          <div className="flex items-center justify-between text-zinc-400 mb-1.5">
             <span className="text-xs font-medium">Health Index</span>
             <Activity className="w-4 h-4 text-cyan-400" />
           </div>
-          <div className="text-2xl font-bold text-cyan-400">
+          <div className="text-xl font-bold text-cyan-400">
             {mainProject ? `${mainProject.health?.score || 100}%` : '100%'}
           </div>
-          <div className="text-[10px] text-zinc-500 mt-1">Auto health engine</div>
+          <div className="text-[10px] text-zinc-500 mt-0.5">Auto engine</div>
         </Card>
       </div>
 
       {/* Main Intelligent Project Health Section or Clean Empty State */}
       {mainProject ? (
-        <Card className="border-indigo-500/30 bg-gradient-to-r from-zinc-900 via-zinc-900/90 to-indigo-950/20 p-6">
+        <>
+          <Card className="border-indigo-500/30 bg-gradient-to-r from-zinc-900 via-zinc-900/90 to-indigo-950/20 p-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2 flex-1">
               <div className="flex items-center space-x-3">
@@ -198,21 +253,29 @@ export default function DashboardPage() {
             </div>
           </div>
         </Card>
+        <InProcessWorkingStatusSection project={mainProject} />
+      </>
       ) : (
         <Card className="p-12 text-center space-y-4 border-dashed border-zinc-800 bg-zinc-950/40">
           <FolderKanban className="w-12 h-12 text-zinc-600 mx-auto" />
           <div className="space-y-1">
-            <h3 className="text-base font-bold text-white">No Projects in Pjsofonic ERP System</h3>
+            <h3 className="text-base font-bold text-white">No Projects in System</h3>
             <p className="text-xs text-zinc-500 max-w-md mx-auto">
-              Get started by launching the Project Creation Wizard to add your first enterprise project.
+              Sync projects directly from Pjsofonic ERP or launch the creation wizard.
             </p>
           </div>
-          <Link href="/projects/new">
-            <Button variant="default" className="text-xs">
-              <Plus className="w-4 h-4 mr-1.5" />
-              <span>Launch Project Creation Wizard</span>
+          <div className="flex justify-center space-x-3">
+            <Button onClick={handleSyncErp} variant="outline" className="text-xs border-emerald-500/40 text-emerald-400">
+              <RefreshCw className="w-4 h-4 mr-1.5" />
+              <span>Fetch Projects from Pjsofonic ERP</span>
             </Button>
-          </Link>
+            <Link href="/projects/new">
+              <Button variant="default" className="text-xs">
+                <Plus className="w-4 h-4 mr-1.5" />
+                <span>Launch Project Creation Wizard</span>
+              </Button>
+            </Link>
+          </div>
         </Card>
       )}
 

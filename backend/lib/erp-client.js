@@ -44,6 +44,7 @@ export async function authenticateWithEms(identifier, password) {
 
   const endpoints = ['/auth/login', '/login', '/auth', '/employee/login'];
 
+  // Variations for identifier to maximize compatibility with live databases
   const idCandidates = [
     cleanId,
     cleanId.toUpperCase(),
@@ -135,6 +136,7 @@ export async function authenticateWithEms(identifier, password) {
             };
           }
 
+          // Capture explicit error message returned by server
           if (data.error || data.message) {
             const msg = data.error || data.message;
             if (msg.toLowerCase().includes('password') || msg.toLowerCase().includes('credentials') || msg.toLowerCase().includes('invalid')) {
@@ -143,7 +145,7 @@ export async function authenticateWithEms(identifier, password) {
           }
 
         } catch (err) {
-          // Continue
+          // Continue to next backend/payload variation
         }
       }
     }

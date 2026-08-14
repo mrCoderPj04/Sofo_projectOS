@@ -1,20 +1,23 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { comparePassword, hashPassword, signToken } from '@/lib/auth';
-import { authenticateWithEms, isTeamLeaderDepartment } from '@/lib/erp-client';
+import express from 'express';
+import { prisma } from '../lib/db.js';
+import { hashPassword, comparePassword, signToken, authMiddleware } from '../lib/auth.js';
+import { authenticateWithEms, isTeamLeaderDepartment } from '../lib/erp-client.js';
 
-export async function POST(request) {
+const router = express.Router();
+
+// POST /api/auth/login — Pjsofonic EMS Team Leader SSO Authentication
+router.post('/login', async (req, res) => {
   try {
-    const { loginId, employeeId, email, password } = await request.json();
+    const { loginId, employeeId, email, password } = req.body;
     const identifier = (employeeId || loginId || email || '').trim();
 
     if (!identifier || !password) {
-      return NextResponse.json({
+      return res.status(400).json({
         error: 'Pjsofonic EMS Employee ID and Password are required.'
-      }, { status: 400 });
+      });
     }
 
-    // Step 1: Live Authentication against Pjsofonic EMS Backend API (https://erp-backend-1-02lc.onrender.com/api/auth/login)
+    // Step 1: Live Authentication against Pjsofonic EMS API (https://erp-backend-1-02lc.onrender.com/api/auth/login)
     const authResult = await authenticateWithEms(identifier, password);
 
     if (authResult.success && authResult.emsUser) {
@@ -22,9 +25,9 @@ export async function POST(request) {
 
       // STRICT DEPARTMENT AUTHORIZATION: ONLY "Team Leader" Department Allowed
       if (!authResult.isTeamLead && !isTeamLeaderDepartment(emsUser)) {
-        return NextResponse.json({
+        return res.status(403).json({
           error: `Access Denied: Only employees belonging to the 'Team Leader' department in Pjsofonic EMS are authorized to access ProjectOS. Your department is '${emsUser.department}'.`
-        }, { status: 403 });
+        });
       }
 
       let userId = `user-${Math.random().toString(36).substring(2, 9)}`;
@@ -68,10 +71,10 @@ export async function POST(request) {
           userId = user.id;
         }
       } catch (dbErr) {
-        console.warn('DB Sync skipped:', dbErr.message);
+        console.warn('Backend DB Sync skipped:', dbErr.message);
       }
 
-      const token = await signToken({
+      const token = signToken({
         userId,
         employeeId: emsUser.employeeId,
         email: emsUser.email,
@@ -82,8 +85,17 @@ export async function POST(request) {
         avatarUrl: emsUser.avatarUrl
       });
 
-      const response = NextResponse.json({
+      res.cookie('sofo_session', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7 * 1000,
+        path: '/'
+      });
+
+      return res.json({
         success: true,
+        token,
         user: {
           id: userId,
           employeeId: emsUser.employeeId,
@@ -94,25 +106,15 @@ export async function POST(request) {
           avatarUrl: emsUser.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(emsUser.name)}`
         }
       });
-
-      response.cookies.set('sofo_session', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7,
-        path: '/'
-      });
-
-      return response;
     }
 
     if (authResult.isInvalidCredentials) {
-      return NextResponse.json({
+      return res.status(401).json({
         error: authResult.message || 'Invalid Employee ID or Password. Please check your Pjsofonic EMS credentials.'
-      }, { status: 401 });
+      });
     }
 
-    // Step 2: Fallback check against local DB registered employees
+    // Step 2: Fallback DB check
     try {
       const user = await prisma.user.findFirst({
         where: {
@@ -126,19 +128,19 @@ export async function POST(request) {
 
       if (user) {
         if (!isTeamLeaderDepartment(user) && user.role !== 'TEAM_LEADER') {
-          return NextResponse.json({
+          return res.status(403).json({
             error: `Access Denied: Only employees belonging to the 'Team Leader' department in Pjsofonic EMS are authorized to access ProjectOS. Your department is '${user.department}'.`
-          }, { status: 403 });
+          });
         }
 
         const isValid = await comparePassword(password, user.password);
         if (!isValid) {
-          return NextResponse.json({
-            error: 'Invalid credentials. Please verify your Pjsofonic EMS password.'
-          }, { status: 401 });
+          return res.status(401).json({
+            error: 'Invalid password. Please verify your Pjsofonic EMS credentials.'
+          });
         }
 
-        const token = await signToken({
+        const token = signToken({
           userId: user.id,
           employeeId: user.employeeId,
           email: user.email,
@@ -148,8 +150,17 @@ export async function POST(request) {
           erpSystem: user.erpSystem
         });
 
-        const response = NextResponse.json({
+        res.cookie('sofo_session', token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 7 * 1000,
+          path: '/'
+        });
+
+        return res.json({
           success: true,
+          token,
           user: {
             id: user.id,
             employeeId: user.employeeId,
@@ -160,22 +171,12 @@ export async function POST(request) {
             avatarUrl: user.avatarUrl
           }
         });
-
-        response.cookies.set('sofo_session', token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 7,
-          path: '/'
-        });
-
-        return response;
       }
     } catch (dbErr) {
-      console.warn('Fallback DB check skipped:', dbErr.message);
+      console.warn('Backend DB lookup skipped:', dbErr.message);
     }
 
-    // Step 3: Local Dev Team Leader Account (Allows testing with Team Leader credentials if EMS API is cold-starting)
+    // Step 3: Local Dev Team Leader Account
     const isTeamLeadIdentifier = identifier.toLowerCase().includes('lead') || identifier.toLowerCase().includes('tl') || identifier.toUpperCase().startsWith('PJ-TL');
     if (isTeamLeadIdentifier || identifier === 'teamlead@pjsofonic.com') {
       const demoUser = {
@@ -188,31 +189,77 @@ export async function POST(request) {
         erpSystem: 'Pjsofonic EMS'
       };
 
-      const token = await signToken(demoUser);
-      const response = NextResponse.json({
-        success: true,
-        user: demoUser
-      });
-
-      response.cookies.set('sofo_session', token, {
+      const token = signToken(demoUser);
+      res.cookie('sofo_session', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 60 * 60 * 24 * 7 * 1000,
         path: '/'
       });
 
-      return response;
+      return res.json({
+        success: true,
+        token,
+        user: demoUser
+      });
     }
 
-    return NextResponse.json({
+    return res.status(401).json({
       error: 'Access Denied: User not found in Pjsofonic EMS (https://erp-backend-1-02lc.onrender.com/api). Only employees with department "Team Leader" can log in.'
-    }, { status: 401 });
+    });
 
   } catch (error) {
-    console.error('Pjsofonic EMS Login error:', error);
-    return NextResponse.json({
+    console.error('Backend EMS Auth error:', error);
+    return res.status(500).json({
       error: 'Authentication Error connecting to Pjsofonic EMS Backend'
-    }, { status: 500 });
+    });
   }
-}
+});
+
+// GET /api/auth/me — Get Current Session User
+router.get('/me', authMiddleware, async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.userId },
+      select: {
+        id: true,
+        employeeId: true,
+        name: true,
+        email: true,
+        role: true,
+        department: true,
+        avatarUrl: true
+      }
+    });
+
+    if (user) {
+      return res.json({ user });
+    }
+  } catch (dbErr) {
+    // Return token user
+  }
+
+  return res.json({
+    user: {
+      id: req.user.userId,
+      employeeId: req.user.employeeId,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role || 'TEAM_LEADER',
+      department: req.user.department || 'Team Leader'
+    }
+  });
+});
+
+// POST /api/auth/logout — Log out user session
+router.post('/logout', (req, res) => {
+  res.clearCookie('sofo_session', { path: '/' });
+  return res.json({ success: true, message: 'Logged out successfully' });
+});
+
+export default router;

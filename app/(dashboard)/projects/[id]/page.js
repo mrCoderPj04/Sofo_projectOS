@@ -21,9 +21,11 @@ import {
   ShieldAlert,
   Sparkles,
   Layers,
-  FileCode
+  FileCode,
+  PlayCircle
 } from 'lucide-react';
 import { ProjectArtifactsSection } from '@/components/projects/ProjectArtifactsSection';
+import { InProcessWorkingStatusSection } from '@/components/projects/InProcessWorkingStatusSection';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -75,6 +77,22 @@ export default function ProjectWorkspacePage({ params }) {
     fetchProject();
   };
 
+  const handleStatusChange = async (newStatus) => {
+    try {
+      const res = await fetch(`/api/projects/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setProject((prev) => ({ ...prev, status: newStatus }));
+      }
+    } catch (err) {
+      console.error('Failed to update project status:', err);
+    }
+  };
+
   if (loading) {
     return <div className="py-20 text-center text-zinc-500 text-sm">Loading project workspace...</div>;
   }
@@ -85,6 +103,7 @@ export default function ProjectWorkspacePage({ params }) {
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+    { id: 'in-process', label: 'In-Process Working Status', icon: PlayCircle },
     { id: 'artifacts', label: 'Artifacts & Deliverables', icon: FileCode },
     { id: 'requirements', label: 'Requirements', icon: FileCheck2, count: project.requirements?.length },
     { id: 'problems', label: 'Problems', icon: AlertTriangle, count: project.problems?.length },
@@ -106,7 +125,18 @@ export default function ProjectWorkspacePage({ params }) {
         <div className="space-y-1">
           <div className="flex items-center space-x-3">
             <h1 className="text-2xl font-black text-white">{project.name}</h1>
-            <Badge variant="primary">{project.status}</Badge>
+            <div className="flex items-center space-x-1.5 bg-zinc-950 px-2 py-1 rounded-lg border border-zinc-800">
+              <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Status:</span>
+              <select
+                value={project.status}
+                onChange={(e) => handleStatusChange(e.target.value)}
+                className="h-6 text-xs font-bold font-mono rounded bg-zinc-900 px-2 text-indigo-300 border border-indigo-500/40 focus:outline-none cursor-pointer"
+              >
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="IN_PROCESS">IN PROCESS</option>
+                <option value="DONE">DONE</option>
+              </select>
+            </div>
             <Badge
               variant={
                 project.health?.status === 'GREEN'
@@ -165,6 +195,11 @@ export default function ProjectWorkspacePage({ params }) {
         })}
       </div>
 
+      {/* Tab: In-Process Working Status */}
+      {activeTab === 'in-process' && (
+        <InProcessWorkingStatusSection project={project} />
+      )}
+
       {/* Tab: Artifacts & Deliverables */}
       {activeTab === 'artifacts' && (
         <ProjectArtifactsSection projectId={id} />
@@ -172,8 +207,11 @@ export default function ProjectWorkspacePage({ params }) {
 
       {/* Tab 1: Overview */}
       {activeTab === 'overview' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-6">
+          <InProcessWorkingStatusSection project={project} />
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
             {/* Health Explanation Banner */}
             <Card className="p-4 bg-zinc-900/80 border-indigo-500/20">
               <div className="text-xs space-y-1">
@@ -288,7 +326,8 @@ export default function ProjectWorkspacePage({ params }) {
             </Card>
           </div>
         </div>
-      )}
+      </div>
+    )}
 
       {/* Tab 2: Requirements */}
       {activeTab === 'requirements' && (

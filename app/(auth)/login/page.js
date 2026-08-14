@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ShieldCheck, UserCheck, KeyRound, ArrowRight, AlertCircle } from 'lucide-react';
+import { ShieldCheck, UserCheck, KeyRound, ArrowRight, AlertCircle, Building2, Crown } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,11 +30,11 @@ export default function LoginPage() {
       if (res.ok && data.success) {
         router.push('/dashboard');
       } else {
-        setError(data.error || 'Access Denied: Account not registered in system.');
+        setError(data.error || 'Access Denied: Account is not authorized as a Team Leader in EMS/ERP.');
         setLoading(false);
       }
     } catch (err) {
-      setError('Connection error to authentication backend API.');
+      setError('Connection error to EMS/ERP authentication backend API.');
       setLoading(false);
     }
   };
@@ -42,24 +42,25 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 text-zinc-100 dark selection:bg-[#39FF14] selection:text-black">
       <div className="w-full max-w-md space-y-4">
-        {/* Top Header Banner - Round Circle Logo */}
+        {/* Top Header Banner */}
         <div className="text-center space-y-2">
           <div className="w-16 h-16 rounded-full bg-zinc-950 p-0.5 mx-auto shadow-2xl shadow-indigo-500/20 border border-zinc-800 hover:border-[#39FF14] transition-all flex items-center justify-center group">
             <img src="/sofo_Pm.png" alt="Logo" className="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform" />
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-white flex items-center justify-center space-x-1 pt-1">
+          <h1 className="text-2xl font-black tracking-tight text-white flex items-center justify-center space-x-1.5 pt-1">
             <span>SOFO ProjectOS</span>
           </h1>
-          <p className="text-xs text-zinc-400">
-            Enterprise Single Sign-On • Registered Employees Only
-          </p>
+          <div className="flex items-center justify-center space-x-1 text-xs text-[#39FF14] font-medium">
+            <Crown className="w-3.5 h-3.5" />
+            <span>Team Leader Exclusive Access</span>
+          </div>
         </div>
 
         {/* Login Form Card */}
         <Card className="p-6 bg-zinc-950/90 border-zinc-800 space-y-5 shadow-2xl backdrop-blur-xl hover:border-[#39FF14]/30 transition-all">
-          <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 text-xs flex items-center space-x-2.5">
-            <ShieldCheck className="w-4 h-4 text-indigo-400 shrink-0" />
-            <span>Strict Auth Gateway: Authenticated against employee backend database. Public registration disabled.</span>
+          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-xs flex items-center space-x-2.5">
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>EMS & ERP Dual Backend Verification. Only verified <b>Team Leaders</b> are authorized to log in.</span>
           </div>
 
           {error && (
@@ -74,14 +75,14 @@ export default function LoginPage() {
               <label className="font-semibold text-zinc-200 block mb-1.5 flex items-center justify-between">
                 <span className="flex items-center space-x-1.5">
                   <UserCheck className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>Employee ID / Login ID</span>
+                  <span>Team Leader Employee ID / Email</span>
                 </span>
               </label>
               <Input
                 type="text"
                 value={loginId}
                 onChange={(e) => setLoginId(e.target.value)}
-                placeholder="Enter your Employee ID / Login ID"
+                placeholder="e.g. PJ-TL-101 or teamlead@pjsofonic.com"
                 required
                 className="text-xs bg-zinc-950 font-mono focus:border-[#39FF14]"
               />
@@ -96,7 +97,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder="Enter your EMS/ERP password"
                 required
                 className="text-xs bg-zinc-950 focus:border-[#39FF14]"
               />
@@ -107,15 +108,33 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full bg-indigo-600 hover:bg-[#39FF14] hover:text-black text-white text-xs font-semibold py-2.5 rounded-xl shadow-lg hover:shadow-[0_0_20px_rgba(57,255,20,0.5)] transition-all flex items-center justify-center space-x-2 cursor-pointer"
             >
-              <span>{loading ? 'Verifying Credentials...' : 'Sign In'}</span>
+              <span>{loading ? 'Verifying Team Leader Authorization...' : 'Sign In as Team Leader'}</span>
               {!loading && <ArrowRight className="w-4 h-4" />}
             </Button>
           </form>
+
+          {/* Backend Badges */}
+          <div className="pt-2 border-t border-zinc-800/80 space-y-1.5 text-[11px]">
+            <div className="text-zinc-400 font-medium flex items-center space-x-1">
+              <Building2 className="w-3 h-3 text-indigo-400" />
+              <span>Connected Backend Services:</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-zinc-900 border border-zinc-800 p-1.5 rounded text-center">
+                <div className="text-white font-medium text-[10px]">Pjsofonic EMS</div>
+                <div className="text-emerald-400 text-[9px] font-mono">erp-backend-1-02lc</div>
+              </div>
+              <div className="bg-zinc-900 border border-zinc-800 p-1.5 rounded text-center">
+                <div className="text-white font-medium text-[10px]">Pjsofonic ERP</div>
+                <div className="text-emerald-400 text-[9px] font-mono">pjsofonic-erp-backend</div>
+              </div>
+            </div>
+          </div>
         </Card>
 
         {/* Footer info */}
         <div className="text-center text-[11px] text-zinc-500">
-          SOFO ProjectOS Gateway • API Integrated
+          SOFO ProjectOS • Pjsofonic Enterprise Operating System
         </div>
       </div>
     </div>
