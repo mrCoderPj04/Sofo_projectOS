@@ -91,7 +91,15 @@ export function RightSidebar({ currentUser }) {
           <div className="flex items-center justify-between pb-3 border-b border-zinc-800/80">
             <div className="flex items-center space-x-2.5">
               <div className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-700/80 p-0.5 shadow-md shadow-indigo-500/20">
-                <img src="/sofo_Pm.png" alt="Logo" className="w-full h-full object-cover rounded-full" />
+                <img
+                  src="/sofo_Pm.png"
+                  alt="Logo"
+                  className="w-full h-full object-cover rounded-full"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%2339FF14'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='48' fill='url(%23g)'/%3E%3Ctext x='50' y='62' font-size='42' font-weight='900' text-anchor='middle' fill='%23000' font-family='sans-serif'%3ES%3C/text%3E%3C/svg%3E";
+                  }}
+                />
               </div>
               <div>
                 <div className="text-xs font-black text-white flex items-center space-x-1">

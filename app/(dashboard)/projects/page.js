@@ -215,8 +215,19 @@ export default function ProjectsPage() {
                   </select>
                 </div>
 
-                <CardTitle className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors flex items-center justify-between">
-                  <span>{project.name}</span>
+                <CardTitle className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors flex items-center space-x-3 pt-1">
+                  <div className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-700/80 p-1 flex items-center justify-center shrink-0 shadow-md">
+                    <img
+                      src={project.logoUrl || `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(project.name)}`}
+                      alt="Project Logo"
+                      className="w-full h-full object-contain rounded-lg"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(project.name)}`;
+                      }}
+                    />
+                  </div>
+                  <span className="truncate">{project.name}</span>
                 </CardTitle>
 
                 <CardDescription className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">

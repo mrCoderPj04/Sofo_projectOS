@@ -124,6 +124,17 @@ export default function ProjectWorkspacePage({ params }) {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800 pb-5">
         <div className="space-y-1">
           <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-zinc-950 border border-zinc-700/80 p-1 flex items-center justify-center shrink-0 shadow-lg">
+              <img
+                src={project.logoUrl || `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(project.name)}`}
+                alt="Project Logo"
+                className="w-full h-full object-contain rounded-lg"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(project.name)}`;
+                }}
+              />
+            </div>
             <h1 className="text-2xl font-black text-white">{project.name}</h1>
             <div className="flex items-center space-x-1.5 bg-zinc-950 px-2 py-1 rounded-lg border border-zinc-800">
               <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Status:</span>

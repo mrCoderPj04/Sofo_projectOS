@@ -44,7 +44,15 @@ export function Header({ onOpenCommandPalette, currentUser }) {
         {/* Mobile Brand Logo - Round Circle */}
         <Link href="/dashboard" className="md:hidden flex items-center space-x-2 shrink-0 group">
           <div className="w-8 h-8 rounded-full p-0.5 bg-zinc-900 border border-zinc-700/80 group-hover:border-[#39FF14] transition-all shadow-md">
-            <img src="/sofo_Pm.png" alt="Logo" className="w-full h-full object-cover rounded-full" />
+            <img
+              src="/sofo_Pm.png"
+              alt="Logo"
+              className="w-full h-full object-cover rounded-full"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%2339FF14'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='48' fill='url(%23g)'/%3E%3Ctext x='50' y='62' font-size='42' font-weight='900' text-anchor='middle' fill='%23000' font-family='sans-serif'%3ES%3C/text%3E%3C/svg%3E";
+              }}
+            />
           </div>
           <span className="text-xs font-black text-white group-hover:text-[#39FF14] transition-colors">ProjectOS</span>
         </Link>
